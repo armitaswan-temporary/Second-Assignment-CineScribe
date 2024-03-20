@@ -4,14 +4,24 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.io.BufferedReader;
 import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class Movie {
-    public static final String API_KEY = "Your API_KEY";   // TODO --> add your api key about Movie here
+    public static final String API_KEY = "3a211d0f";
     int ImdbVotes;
     ArrayList<String> actorsList;
     String rating;
+    String title;
+    String year;
+    String released;
+    String director;
+    String genre;
 
-    public Movie(ArrayList<String> actorsList, String rating, int ImdbVotes){
-        //TODO --> (Write a proper constructor using the get_from_api functions)
+    public Movie(ArrayList<String> actorsList, String rating, int ImdbVotes) {
+        this.actorsList = actorsList;
+        this.ImdbVotes = ImdbVotes;
+        this.rating = rating;
     }
 
     @SuppressWarnings("deprecation")
@@ -36,21 +46,70 @@ public class Movie {
         //handle an error if the chosen movie is not found
         return stringBuilder.toString();
     }
-    public int getImdbVotesViaApi(String moviesInfoJson){
-        //TODO --> (This function must change and return the "ImdbVotes" as an Integer)
-        // NOTICE :: you are not permitted to convert this function to return a String instead of an int !!!
-        int ImdbVotes = 0;
+
+    public String movieErrorHandling(String moviesInfoJson){
+        JSONObject jsonObject = new JSONObject(moviesInfoJson);
+        String error = jsonObject.getString("Response");
+        return error;
+    }
+
+    public int getImdbVotesViaApi(String moviesInfoJson) {
+        JSONObject Imdb = new JSONObject(moviesInfoJson);
+        ImdbVotes = Integer.parseInt(Imdb.getString("imdbVotes").replace(",",""));
         return ImdbVotes;
     }
 
-    public String getRatingViaApi(String moviesInfoJson){
-        //TODO --> (This function must return the rating in the "Ratings" part
-        // where the source is "Internet Movie Database")  -->
-        String rating = "";
+    public String getRatingViaApi(String moviesInfoJson) {
+        JSONObject jsonArray = new JSONObject(moviesInfoJson);
+        JSONArray Rating = jsonArray.getJSONArray("Ratings");
+        rating = null;
+        for(int i = 0; i < Rating.length(); i++) {
+            JSONObject rate = Rating.getJSONObject(i);
+            if(rate.getString("Source").equals("Internet Movie Database")) {
+                rating = rate.getString("Value");
+            }
+        }
         return rating;
     }
 
-    public void getActorListViaApi(String movieInfoJson){
-        //TODO --> (This function must return the "Actors" in actorsList)
+    public ArrayList<String> getActorListViaApi(String moviesInfoJson) {
+        JSONObject jsonObject = new JSONObject(moviesInfoJson);
+        String actors = jsonObject.getString("Actors");
+        String[] arrayList = actors.split(", ");
+        for (String i : arrayList){
+            actorsList.add(i);
+        }
+        return actorsList;
+    }
+
+    public String getTitleViaApi(String moviesInfoJson) {
+        JSONObject object = new JSONObject(moviesInfoJson);
+
+        title = object.getString("Title");
+        return title;
+    }
+
+    public String getYearViaApi(String moviesInfoJson) {
+        JSONObject jsonObject = new JSONObject(moviesInfoJson);
+        year = jsonObject.getString("Year");
+        return year;
+    }
+
+    public String getReleaseViaApi(String moviesInfoJson) {
+        JSONObject jsonObject = new JSONObject(moviesInfoJson);
+        released = jsonObject.getString("Released");
+        return released;
+    }
+
+    public String getDirectorViaApi(String moviesInfoJson) {
+        JSONObject jsonObject = new JSONObject(moviesInfoJson);
+        director = jsonObject.getString("Director");
+        return director;
+    }
+
+    public String getGenreViaApi(String moviesInfoJson) {
+        JSONObject jsonObject = new JSONObject(moviesInfoJson);
+        genre = jsonObject.getString("Genre");
+        return genre;
     }
 }

@@ -1,15 +1,24 @@
+import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.HttpURLConnection;
 public class Actors {
-    public static final String API_KEY = "Your API_KEY";   // TODO --> add your api key about Actors here
-    String netWorth;
+    public static final String API_KEY = "JR+XmdvUVA4gHkJuIvQppg==ivBToE60MqreDITx";
+    double netWorth;
     Boolean isAlive;
+    String name;
+    String gender;
+    String nationality;
+    double height;
+    String birthday;
+    int age;
+    String death;
 
-    public Actors(String netWorth, boolean isAlive){
-        //TODO --> (Write a proper constructor using the get_from_api functions)
+    public Actors(double netWorth, boolean isAlive) {
+        this.isAlive = isAlive;
+        this.netWorth = netWorth;
     }
     @SuppressWarnings({"deprecation"})
     /**
@@ -43,22 +52,80 @@ public class Actors {
             return null;
         }
     }
-    public double getNetWorthViaApi(String actorsInfoJson){
-        //TODO --> (This function must return the "NetWorth")
-        double result = 0.0;
-        return result;
+
+    public boolean actorErrorHandling(String actorsInfoJson){
+        String actorsInfo = actorsInfoJson.substring(1, actorsInfoJson.length()-1);
+        if (actorsInfo == ""){
+            return false;
+        }
+        return true;
     }
 
-    public boolean isAlive(String actorsInfoJson){
-        //TODO --> (If your chosen actor is alive it must return true otherwise it must return false)
-        boolean statues = false;
-        return statues;
+    public double getNetWorthViaApi(String actorsInfoJson) {
+        String actorsInfo = actorsInfoJson.substring(1, actorsInfoJson.length()-1);
+        JSONObject actorNetWorth = new JSONObject(actorsInfo);
+        netWorth = actorNetWorth.getInt("net_worth");
+        return netWorth;
     }
 
-    public String getDateOfDeathViaApi(String actorsInfoJson){
-        //TODO --> (If your chosen actor is deceased it must return the date of death)  -->
-        String date = "";
-        return date;
+    public boolean isAlive(String actorsInfoJson) {
+        String actorsInfo = actorsInfoJson.substring(1, actorsInfoJson.length()-1);
+        JSONObject alive = new JSONObject(actorsInfo);
+        isAlive = alive.getBoolean("is_alive");
+        return isAlive;
     }
 
+    public String getDateOfDeathViaApi(String actorsInfoJson) {
+        if (!isAlive(actorsInfoJson)) {
+            String actorsInfo = actorsInfoJson.substring(1, actorsInfoJson.length()-1);
+            JSONObject dateofDeath = new JSONObject(actorsInfo);
+            death = dateofDeath.getString("death");
+            return death;
+        }
+        else {
+            return "-";
+        }
+    }
+
+    public String getNameViaApi(String actorsInfoJson){
+        String actorsInfo = actorsInfoJson.substring(1 , actorsInfoJson.length()-1);
+        JSONObject jsonObject = new JSONObject(actorsInfo);
+        name = jsonObject.getString("name");
+        return name;
+    }
+
+    public String getGenderViaAPi(String actorsInfoJson) {
+        String actorsInfo = actorsInfoJson.substring(1, actorsInfoJson.length()-1);
+        JSONObject jsonObject = new JSONObject(actorsInfo);
+        gender = jsonObject.getString("gender");
+        return gender;
+    }
+
+    public String getNationalityViaApi(String actorsInfoJson) {
+        String actorsInfo = actorsInfoJson.substring(1, actorsInfoJson.length()-1);
+        JSONObject jsonObject = new JSONObject(actorsInfo);
+        nationality = jsonObject.getString("nationality");
+        return nationality;
+    }
+
+    public double getHeightViaAPi(String actorsInfoJson) {
+        String actorsInfo = actorsInfoJson.substring(1, actorsInfoJson.length()-1);
+        JSONObject jsonObject = new JSONObject(actorsInfo);
+        height = jsonObject.getDouble("height");
+        return height;
+    }
+
+    public String getBirthdayViaApi(String actorsInfoJson) {
+        String actorsInfo = actorsInfoJson.substring(1, actorsInfoJson.length()-1);
+        JSONObject jsonObject = new JSONObject(actorsInfo);
+        birthday = jsonObject.getString("birthday");
+        return birthday;
+    }
+
+    public int getAgeViaAPi(String actorsInfoJson) {
+        String actorsInfo = actorsInfoJson.substring(1, actorsInfoJson.length()-1);
+        JSONObject jsonObject = new JSONObject(actorsInfo);
+        age = jsonObject.getInt("age");
+        return age;
+    }
 }
